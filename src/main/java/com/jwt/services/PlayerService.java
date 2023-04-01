@@ -108,6 +108,7 @@ public class PlayerService {
 
     public ResponseEntity<MessageResponse> update(Long id, Player player){
         Fellowship fellow = new Fellowship();
+        fellow.setId(id);
         fellow.setFirstname(player.getFirstname());
         fellow.setLastname(player.getLastname());
         fellow.setFirstnameI(player.getFirstnameI());

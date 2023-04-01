@@ -113,6 +113,7 @@ public class ManagerService {
     public ResponseEntity<MessageResponse> update(Long id, Manager manager){
         if(fellowshipRepository.existsById(id)) {
             Fellowship fellow = new Fellowship();
+            fellow.setId(id);
             fellow.setFirstname(manager.getFirstname());
             fellow.setLastname(manager.getLastname());
             fellow.setFirstnameI(manager.getFirstnameI());

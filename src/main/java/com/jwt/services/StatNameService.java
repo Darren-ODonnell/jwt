@@ -84,16 +84,16 @@ public class StatNameService {
 
     // edit/update a StatName record - only if record with id exists
 
-    public ResponseEntity<MessageResponse> update(StatNameModel statNameModel){
+    public ResponseEntity<MessageResponse> update(StatName statName){
 
         // check if exists first
         // then update
 
-        if(statNameRepository.existsById(statNameModel.getAbbrev())) {
-            statNameRepository.save(statNameModel.translateModelToStatName());
+        if(statNameRepository.existsById(statName.getId())) {
+            statNameRepository.save(statName);
             return ResponseEntity.ok(new MyMessageResponse("StatName record updated", MessageTypes.INFO));
         } else {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(new MyMessageResponse("Error: Id does not exist [" + statNameModel.getAbbrev() + "] -> cannot update record", MessageTypes.WARN));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new MyMessageResponse("Error: Id does not exist [" + statName.getId() + "] -> cannot update record", MessageTypes.WARN));
         }
 
     }
