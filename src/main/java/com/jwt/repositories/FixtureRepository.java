@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,6 +35,8 @@ public interface FixtureRepository extends JpaRepository<Fixture, Long> {
             nativeQuery = true)
     Optional<List<Fixture>> findLastFive();
 
+    @Query("SELECT f.id FROM Fixture f WHERE (f.homeTeam.id = :clubId OR f.awayTeam.id = :clubId) AND f.fixtureDate = (SELECT MAX(f2.fixtureDate) FROM Fixture f2 WHERE f2.fixtureDate < :today)")
+    Long findMostRecentFixtureIdByClubIdAndDate(Long clubId, Date today);
 
 }
 

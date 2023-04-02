@@ -47,6 +47,16 @@ public class TeamsheetService {
         return teamsheets;
     }
 
+    // return all Teamsheets
+
+    public List<Teamsheet> last(){
+        Long fixtureId = fixtureService.findMostRecentFixtureIdByClubIdAndDate();
+        Optional<List<Teamsheet>> teamsheets = teamsheetRepository.findByFixtureId(fixtureId);
+        if(teamsheets.isEmpty())
+            new MyMessageResponse(String.format("No Teamsheets found for this fixture Id: %d ", fixtureId), MessageTypes.ERROR);
+        return teamsheets.orElse(new ArrayList<>());
+    }
+
     // return Teamsheet by id
 
     public Teamsheet findById( TeamsheetId id){

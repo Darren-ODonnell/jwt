@@ -58,6 +58,13 @@ public class FixtureService {
         return fixtureRepository.findByFixtureDateAfterOrderByFixtureDate(date).orElse(new ArrayList<>());
     }
 
+    // get date of last fixture id back from todays date
+
+    public Long findMostRecentFixtureIdByClubIdAndDate() {
+        Date today = new Date(System.currentTimeMillis());
+        Long clubId = clubService.getIdByName(clubName);
+        return fixtureRepository.findMostRecentFixtureIdByClubIdAndDate(clubId, today);
+    }
 
     // list fixtures by date
 

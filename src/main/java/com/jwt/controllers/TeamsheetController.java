@@ -39,6 +39,15 @@ public class TeamsheetController {
         return teamsheetService.list();
     }
 
+    // return the last Teamsheet in the past from todays date
+
+    @GetMapping(value={"/","/last"} )
+    @PreAuthorize("hasRole('ROLE_PLAYER')  or hasRole('ROLE_ADMIN') or hasRole('ROLE_COACH')")
+    public @ResponseBody List<Teamsheet> last(){
+
+        return teamsheetService.last();
+    }
+
     // return Teamsheet by id
 
     @GetMapping(value="/findById")
