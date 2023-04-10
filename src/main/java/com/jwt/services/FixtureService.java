@@ -6,6 +6,7 @@ import com.jwt.models.*;
 import com.jwt.payload.response.MessageResponse;
 import com.jwt.repositories.FixtureRepository;
 import com.jwt.repositories.StatRepository;
+import com.jwt.repositories.TeamsheetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.sql.Date;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class FixtureService {
@@ -26,15 +28,17 @@ public class FixtureService {
     StatService statService;
     ClubService clubService;
     CompetitionService competitionService;
-
+    private final TeamsheetRepository teamsheetRepository;
 
 
     @Autowired
-    public FixtureService(FixtureRepository fixtureRepository, ClubService clubService, CompetitionService competitionService) {
+    public FixtureService(FixtureRepository fixtureRepository, ClubService clubService, CompetitionService competitionService,
+                          TeamsheetRepository teamsheetRepository) {
         this.fixtureRepository = fixtureRepository;
         this.clubService = clubService;
         this.competitionService = competitionService;
 
+        this.teamsheetRepository = teamsheetRepository;
     }
 
     // setter injection used to avoid circular dependencies
@@ -253,5 +257,24 @@ public class FixtureService {
 
     public List<Fixture> findLastFive() {
         return fixtureRepository.findLastFive().orElse(new ArrayList<>());
+    }
+
+
+
+    // retrieve fixtures with no teamsheets
+
+    public List<Fixture> findWithMoTeamsheet() {
+        List<Fixture> fixtures = findAll();
+        List<Teamsheet> teamsheets = teamsheetRepository.findAll();
+
+        // get set of fixtures with teamsheets
+        Set<Long> fixtureIdsWithTeamsheets = teamsheets.stream().map(teamsheet -> teamsheet.getId().getFixtureId()).collect(Collectors.toSet());
+
+        // find those without teamsheest
+        List<Fixture> fixturesWithNoTeamsheets = fixtures.stream()
+                .filter(fixture -> !fixtureIdsWithTeamsheets.contains(fixture.getId()))
+                .collect(Collectors.toList());
+
+        return fixturesWithNoTeamsheets;
     }
 }

@@ -34,6 +34,16 @@ public class FixtureController {
         return fixtureService.findAll();
     }
 
+    // return all Fixtures
+
+    @GetMapping(value={"/","/listWithNoTeamsheet" })
+    @PreAuthorize("hasRole('ROLE_PLAYER')  or hasRole('ROLE_ADMIN') or hasRole('ROLE_COACH')")
+    public @ResponseBody List<Fixture> listWithNoTeamsheet(){
+        return fixtureService.findWithMoTeamsheet();
+    }
+
+
+
     // return all Upcoming Fixtures
 
     @GetMapping(value={"/findUpcoming" })
