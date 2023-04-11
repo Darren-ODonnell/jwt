@@ -15,11 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -49,12 +46,25 @@ public class TeamsheetService {
 
     // return all Teamsheets
 
-    public List<Teamsheet> last(){
-        Long fixtureId = fixtureService.findMostRecentFixtureIdByClubIdAndDate();
-        Optional<List<Teamsheet>> teamsheets = teamsheetRepository.findByFixtureIdOrderByPosition_Id(fixtureId);
-        if(teamsheets.isEmpty())
+    public List<Teamsheet> last() {
+        // get teamsheets
+        List<Teamsheet> teamsheets = list();
+
+        // sort by fixtureId leaving the most recent teamsheet first in list
+        teamsheets.sort(Comparator.comparing(ts -> ts.getFixture().getFixtureDate(), Comparator.reverseOrder()));
+
+        // pick up fixtureId from first teamsheet
+        Long fixtureId = teamsheets.get(0).getFixture().getId();
+
+        // filter by this fixtureId
+        List<Teamsheet> filteredTeamsheets = teamsheets.stream()
+                .filter(ts -> ts.getFixture().getId() == fixtureId)
+                .collect(Collectors.toList());
+
+        // check if empty and return
+        if(filteredTeamsheets.isEmpty())
             new MyMessageResponse(String.format("No Teamsheets found for this fixture Id: %d ", fixtureId), MessageTypes.ERROR);
-        return teamsheets.orElse(new ArrayList<>());
+        return filteredTeamsheets;
     }
 
     // return Teamsheet by id
@@ -85,7 +95,6 @@ public class TeamsheetService {
         List<Player> players = new ArrayList<>();
         for(Teamsheet ts : teamsheets)
             players.add(ts.getPlayer());
-
         return players;
     }
 
@@ -97,7 +106,6 @@ public class TeamsheetService {
 
     // add new Teamsheet
     public ResponseEntity<MessageResponse> addAll(List<TeamsheetModel> teamsheetModels){
-
         List<Teamsheet> teamsheetsToSave = new ArrayList<>();
 
         for (TeamsheetModel teamsheetModel : teamsheetModels) {
@@ -108,11 +116,9 @@ public class TeamsheetService {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(new MyMessageResponse("Error: Teamsheet already exists", MessageTypes.WARN));
             }
         }
-
         teamsheetRepository.saveAll(teamsheetsToSave);
         return ResponseEntity.ok(new MyMessageResponse("new Teamsheets added", MessageTypes.INFO));
     }
-
 
     // delete by id
 

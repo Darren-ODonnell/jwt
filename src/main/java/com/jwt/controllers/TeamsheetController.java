@@ -43,6 +43,7 @@ public class TeamsheetController {
     @GetMapping(value={"/","/last"} )
     @PreAuthorize("hasRole('ROLE_PLAYER')  or hasRole('ROLE_ADMIN') or hasRole('ROLE_COACH')")
     public @ResponseBody List<Teamsheet> last(){
+
         return teamsheetService.last();
     }
 
