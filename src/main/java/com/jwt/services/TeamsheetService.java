@@ -51,7 +51,7 @@ public class TeamsheetService {
 
     public List<Teamsheet> last(){
         Long fixtureId = fixtureService.findMostRecentFixtureIdByClubIdAndDate();
-        Optional<List<Teamsheet>> teamsheets = teamsheetRepository.findByFixtureId(fixtureId);
+        Optional<List<Teamsheet>> teamsheets = teamsheetRepository.findByFixtureIdOrderByPosition_Id(fixtureId);
         if(teamsheets.isEmpty())
             new MyMessageResponse(String.format("No Teamsheets found for this fixture Id: %d ", fixtureId), MessageTypes.ERROR);
         return teamsheets.orElse(new ArrayList<>());
@@ -66,7 +66,7 @@ public class TeamsheetService {
         return teamsheet.orElse(new Teamsheet());
     }
     public List<Teamsheet> findByFixtureId( Long id){
-        Optional<List<Teamsheet>> teamsheets = teamsheetRepository.findByFixtureIdOrderByPosition(id);
+        Optional<List<Teamsheet>> teamsheets = teamsheetRepository.findByFixtureIdOrderByPosition_Id(id);
         if(teamsheets.isEmpty())
             new MyMessageResponse(String.format("Fixture id: %d not found", id), MessageTypes.ERROR);
         return teamsheets.orElse(new ArrayList<>());
@@ -81,7 +81,7 @@ public class TeamsheetService {
     public List<Player> findPlayersByFixtureId( Long id){
         // get teamsheet by fixture id.
         // extract and return the list of players from this list
-        List<Teamsheet> teamsheets = teamsheetRepository.findByFixtureIdOrderByPosition(id).orElse(new ArrayList<>());
+        List<Teamsheet> teamsheets = teamsheetRepository.findByFixtureIdOrderByPosition_Id(id).orElse(new ArrayList<>());
         List<Player> players = new ArrayList<>();
         for(Teamsheet ts : teamsheets)
             players.add(ts.getPlayer());
@@ -159,7 +159,7 @@ public class TeamsheetService {
 
         return  fixtures.stream()
                 .filter(f -> f.getHomeTeam().getId().equals(teamId)  || f.getAwayTeam().getId().equals(teamId))
-                .flatMap(f -> teamsheetRepository.findByFixtureIdOrderByPosition(f.getId()).orElse(new ArrayList<Teamsheet>()).stream())
+                .flatMap(f -> teamsheetRepository.findByFixtureIdOrderByPosition_Id(f.getId()).orElse(new ArrayList<Teamsheet>()).stream())
                 .collect(Collectors.toList());
     }
 }

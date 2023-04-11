@@ -35,7 +35,6 @@ public class TeamsheetController {
     @GetMapping(value={"/","/list"} )
     @PreAuthorize("hasRole('ROLE_PLAYER')  or hasRole('ROLE_ADMIN') or hasRole('ROLE_COACH')")
     public @ResponseBody List<Teamsheet> list(){
-
         return teamsheetService.list();
     }
 
@@ -44,7 +43,6 @@ public class TeamsheetController {
     @GetMapping(value={"/","/last"} )
     @PreAuthorize("hasRole('ROLE_PLAYER')  or hasRole('ROLE_ADMIN') or hasRole('ROLE_COACH')")
     public @ResponseBody List<Teamsheet> last(){
-
         return teamsheetService.last();
     }
 
@@ -74,7 +72,6 @@ public class TeamsheetController {
     public @ResponseBody List<Teamsheet> findPlayersByFixtureDate(@RequestParam("fixture_date") Date fixtureDate){
         return teamsheetService.findPlayersByFixtureDate(fixtureDate);
     }
-
 
     @GetMapping(value="/findByPlayerId")
     @PreAuthorize("hasRole('ROLE_PLAYER')  or hasRole('ROLE_ADMIN') or hasRole('ROLE_COACH')")
