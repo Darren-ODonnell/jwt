@@ -1,7 +1,9 @@
 package com.jwt.models;
 
-import javax.persistence.*;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import javax.persistence.*;
+@JsonDeserialize(using = TeamsheetDeserialiser.class)
 @Entity
 @Table(name = "teamsheets", indexes = {
         @Index(name = "player_id", columnList = "player_id"),

@@ -120,6 +120,22 @@ public class TeamsheetService {
         return ResponseEntity.ok(new MyMessageResponse("new Teamsheets added", MessageTypes.INFO));
     }
 
+    // add new Teamsheet
+    public ResponseEntity<MessageResponse> addAll2(List<Teamsheet> teamsheets){
+        List<Teamsheet> teamsheetsToSave = new ArrayList<>();
+
+        for (Teamsheet teamsheet : teamsheets) {
+            if(!teamsheetRepository.existsByFixtureId(teamsheet.getFixture().getId())) {
+//                Teamsheet teamsheet = teamsheet.translateModelToTeamsheet();
+                teamsheetsToSave.add(teamsheet);
+            } else {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(new MyMessageResponse("Error: Teamsheet already exists", MessageTypes.WARN));
+            }
+        }
+        teamsheetRepository.saveAll(teamsheetsToSave);
+        return ResponseEntity.ok(new MyMessageResponse("new Teamsheets added", MessageTypes.INFO));
+    }
+
     // delete by id
 
     public List<Teamsheet> delete(Teamsheet teamsheet){

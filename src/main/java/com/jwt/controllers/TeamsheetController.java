@@ -1,23 +1,35 @@
 package com.jwt.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jwt.models.Player;
 import com.jwt.models.Teamsheet;
 import com.jwt.models.TeamsheetId;
 import com.jwt.models.TeamsheetModel;
 import com.jwt.payload.response.MessageResponse;
 import com.jwt.services.TeamsheetService;
+import lombok.SneakyThrows;
+import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /**
  * @author Darren O'Donnell
  */
+@Log
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RequestMapping({"/teamsheet","/teamsheets"})
@@ -90,11 +102,36 @@ public class TeamsheetController {
 
     // add new Teamsheet
 
+    @PutMapping(value="/addAll2")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_COACH')")
+    public ResponseEntity<MessageResponse> addAll(@RequestBody List<Teamsheet> teamsheets){
+        return teamsheetService.addAll2(teamsheets);
+    }
+
+    // add new Teamsheet
+
     @PutMapping(value="/addAll")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_COACH')")
-    public ResponseEntity<MessageResponse> addAll(@RequestBody List<TeamsheetModel> teamsheetModels){
-        return teamsheetService.addAll(teamsheetModels);
+    public ResponseEntity<MessageResponse> addAll2(@RequestBody String payload) {
+        try {
+            JsonNode payloadJson = new ObjectMapper().readTree(payload);
+
+            List<Teamsheet> teamsheets = new ArrayList<>();
+
+            for (JsonNode jsonNode : payloadJson) {
+                Teamsheet teamsheet = new ObjectMapper().treeToValue(jsonNode, Teamsheet.class);
+                teamsheets.add(teamsheet);
+            }
+            return teamsheetService.addAll2(teamsheets);
+            // Your implementation
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
+
+
 
     // edit/update a Teamsheet record - only if record with id exists
 
