@@ -19,6 +19,11 @@ public class TeamsheetId implements Serializable {
     public TeamsheetId() {
     }
 
+    public TeamsheetId(Long fixtureId, Long playerId) {
+        this.playerId = playerId;
+        this.fixtureId = fixtureId;
+    }
+
     public Long getFixtureId() {
         return fixtureId;
     }

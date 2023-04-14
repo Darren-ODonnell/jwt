@@ -6,6 +6,8 @@ import com.jwt.models.*;
 import com.jwt.payload.response.MessageResponse;
 
 
+import com.jwt.repositories.FixtureRepository;
+import com.jwt.repositories.PlayerRepository;
 import com.jwt.repositories.TeamsheetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,12 +30,18 @@ public class TeamsheetService {
     TeamsheetRepository teamsheetRepository;
     FixtureService fixtureService;
     ClubService clubService;
+    private final FixtureRepository fixtureRepository;
+    private final PlayerRepository playerRepository;
 
     @Autowired
-    public TeamsheetService(TeamsheetRepository teamsheetRepository,FixtureService fixtureService, ClubService clubService) {
+    public TeamsheetService(TeamsheetRepository teamsheetRepository,FixtureService fixtureService, ClubService clubService,
+                            FixtureRepository fixtureRepository,
+                            PlayerRepository playerRepository) {
         this.teamsheetRepository = teamsheetRepository;
         this.fixtureService = fixtureService;
         this.clubService = clubService;
+        this.fixtureRepository = fixtureRepository;
+        this.playerRepository = playerRepository;
     }
 
     // return all Teamsheets
@@ -124,16 +132,31 @@ public class TeamsheetService {
     public ResponseEntity<MessageResponse> addAll2(List<Teamsheet> teamsheets){
         List<Teamsheet> teamsheetsToSave = new ArrayList<>();
 
+
+
         for (Teamsheet teamsheet : teamsheets) {
-            if(!teamsheetRepository.existsByFixtureId(teamsheet.getFixture().getId())) {
-//                Teamsheet teamsheet = teamsheet.translateModelToTeamsheet();
+            // skip over null objects created by the deserialisation process
+            if(teamsheet.getFixture() == null || teamsheet.getPlayer() == null) continue;
+
+            // the manual json deserialisation does not create the id object
+            // this is created here before saving to the db
+            TeamsheetId id = new TeamsheetId( teamsheet.getFixture().getId(), teamsheet.getPlayer().getId() );
+            teamsheet.setId(id);
+
+            Fixture fixture = fixtureRepository.findById(teamsheet.getFixture().getId()).orElse(new Fixture());
+            Player player = playerRepository.findById(teamsheet.getPlayer().getId()).orElse(new Player());
+
+            teamsheet.setPlayer(player);
+            teamsheet.setFixture(fixture);
+
+            if(!teamsheetRepository.existsById(teamsheet.getId()))
                 teamsheetsToSave.add(teamsheet);
-            } else {
+            else
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(new MyMessageResponse("Error: Teamsheet already exists", MessageTypes.WARN));
-            }
+
         }
         teamsheetRepository.saveAll(teamsheetsToSave);
-        return ResponseEntity.ok(new MyMessageResponse("new Teamsheets added", MessageTypes.INFO));
+        return ResponseEntity.ok(new MyMessageResponse("new Teamsheets added for Date: " + teamsheets.get(0).getFixture().getFixtureDate() , MessageTypes.INFO));
     }
 
     // delete by id

@@ -113,9 +113,9 @@ public class TeamsheetController {
     @PutMapping(value="/addAll")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_COACH')")
     public ResponseEntity<MessageResponse> addAll2(@RequestBody String payload) {
+        // manual deserialisation performed as the normal handling of same by spring did not work.
         try {
             JsonNode payloadJson = new ObjectMapper().readTree(payload);
-
             List<Teamsheet> teamsheets = new ArrayList<>();
 
             for (JsonNode jsonNode : payloadJson) {
@@ -123,15 +123,12 @@ public class TeamsheetController {
                 teamsheets.add(teamsheet);
             }
             return teamsheetService.addAll2(teamsheets);
-            // Your implementation
 
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
-
-
 
     // edit/update a Teamsheet record - only if record with id exists
 
