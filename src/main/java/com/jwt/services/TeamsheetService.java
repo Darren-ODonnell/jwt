@@ -132,8 +132,6 @@ public class TeamsheetService {
     public ResponseEntity<MessageResponse> addAll2(List<Teamsheet> teamsheets){
         List<Teamsheet> teamsheetsToSave = new ArrayList<>();
 
-
-
         for (Teamsheet teamsheet : teamsheets) {
             // skip over null objects created by the deserialisation process
             if(teamsheet.getFixture() == null || teamsheet.getPlayer() == null) continue;
@@ -151,8 +149,8 @@ public class TeamsheetService {
 
             if(!teamsheetRepository.existsById(teamsheet.getId()))
                 teamsheetsToSave.add(teamsheet);
-            else
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(new MyMessageResponse("Error: Teamsheet already exists", MessageTypes.WARN));
+             else // id exists - so update
+                 teamsheetRepository.save(teamsheet);
 
         }
         teamsheetRepository.saveAll(teamsheetsToSave);
