@@ -6,8 +6,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-
-
 @Log
 @Configuration
 public class CustomSecurityConfig {
@@ -19,5 +17,13 @@ public class CustomSecurityConfig {
 
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {  return new AuthTokenFilter();    }
+
+//    @Bean
+//    public ObjectMapper objectMapper() {
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        // Register the custom deserializer for Teamsheet objects
+//        objectMapper.registerSubtypes(Teamsheet.class);
+//        return objectMapper;
+//    }
 
 }
