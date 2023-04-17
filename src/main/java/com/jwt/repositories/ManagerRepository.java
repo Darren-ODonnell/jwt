@@ -1,7 +1,6 @@
 package com.jwt.repositories;
 
 import com.jwt.models.Manager;
-import com.jwt.models.Player;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
