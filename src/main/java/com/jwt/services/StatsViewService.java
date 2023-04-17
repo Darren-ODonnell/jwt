@@ -285,12 +285,14 @@ public class StatsViewService {
     public List<StatViewCounts> getStatsForLastFiveFixturesWon() {
         List<Fixture> fixtures = fixtureService.findLastFive();
         fixtures = getWins(fixtures);
-        return getStatsAverageStatsForFixtures(fixtures);
+        List<StatViewCounts> statViewCounts = getStatsAverageStatsForFixtures(fixtures);
+        return statViewCounts;
     }
 
     public List<StatViewCounts> getStatsForLastFiveFixturesLost() {
         List<Fixture> fixtures = fixtureService.findLastFive();
         fixtures = getLosses(fixtures);
-        return getStatsAverageStatsForFixtures(fixtures);
+        List<StatViewCounts> statViewCounts = getStatsAverageStatsForFixtures(fixtures);
+        return statViewCounts;
     }
 }

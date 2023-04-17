@@ -76,7 +76,7 @@ public class StatService {
     }
 
     public List<Stat> findByFixtureId(Long fixtureId) {
-        List<Stat> stats = statRepository.findByFixtureId(fixtureId).orElse(new ArrayList<>());
+        List<Stat> stats = statRepository.findByFixtureIdAndLastNameNotOpposition(fixtureId).orElse(new ArrayList<>());
         if(stats.isEmpty())
             new MyMessageResponse(String.format("Warning: Stats: No stats found for this fixture Id: %d", fixtureId), MessageTypes.WARN);
         return stats;
@@ -232,9 +232,10 @@ public class StatService {
     }
 
     public List<List<Stat>> getStatsForFixtures(List<Fixture> fixtures) {
-        return fixtures.stream() // convert to straem
-                .map(fixture -> findByFixtureId(fixture.getId())) // this creates a new list which is a list of stats based on fixtureId
-                .collect(Collectors.toList()); // finally collecting and returning as a list.
+        return fixtures.stream()
+                .map(fixture -> findByFixtureId(fixture.getId()))
+                .filter(stats -> !stats.isEmpty())
+                .collect(Collectors.toList());
 
     }
     public HashMap<String, Integer> sumStatsForFixtures(List<List<Stat>> stats) {
