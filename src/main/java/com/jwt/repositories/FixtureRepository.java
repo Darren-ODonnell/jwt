@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,8 +17,14 @@ public interface FixtureRepository extends JpaRepository<Fixture, Long> {
     Optional<List<Fixture>> findByFixtureDateAfterOrderByFixtureDate(Date date);
 
     Optional<Fixture> findById(Long id);
+    Optional<Fixture> findByOrderByFixtureDate();
     Optional<List<Fixture>> findByAwayTeamId(Long id);
-    Optional<List<Fixture>> findByHomeTeamId(Long id);
+    @Query(value = "SELECT * " +
+            "FROM teamstats.fixtures " +
+            "WHERE fixture_date < CURRENT_DATE() " +
+            "ORDER BY fixture_date DESC ",
+            nativeQuery = true)
+    Optional<List<Fixture>> findByHomeTeamIdOrderByFixtureDateDesc(Long id);
     Optional<Fixture> findFirstByAwayTeamIdOrHomeTeamIdAndFixtureDateGreaterThanOrderByFixtureDate(Long id1, Long id2, Date today);
     Optional<Fixture> findByCompetitionIdAndHomeTeamIdAndAwayTeamIdAndFixtureDateAndSeason(Long compId, Long homeId, Long awayId, Date fixtureDate, int season);
     boolean existsByHomeTeamAndAwayTeamAndCompetitionAndSeason(Club home, Club away, Competition comp, int season);

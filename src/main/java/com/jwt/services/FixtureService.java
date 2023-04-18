@@ -5,13 +5,11 @@ import com.jwt.exceptions.MyMessageResponse;
 import com.jwt.models.*;
 import com.jwt.payload.response.MessageResponse;
 import com.jwt.repositories.FixtureRepository;
-import com.jwt.repositories.StatRepository;
 import com.jwt.repositories.TeamsheetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -128,7 +126,7 @@ public class FixtureService {
             new MyMessageResponse("No Home fixtures found for Club: " + clubModel.getName(), MessageTypes.WARN);
             return new ArrayList<>();
         }
-        Optional<List<Fixture>> fixtures = fixtureRepository.findByHomeTeamId(id);
+        Optional<List<Fixture>> fixtures = fixtureRepository.findByHomeTeamIdOrderByFixtureDateDesc(id);
         return fixtures.orElse(new ArrayList<>());
     }
 
