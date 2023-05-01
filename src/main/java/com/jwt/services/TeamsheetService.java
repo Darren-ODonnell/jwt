@@ -182,6 +182,8 @@ public class TeamsheetService {
         // this method assumes that the list of updates are all against the same fixture.
 
         List<Teamsheet> teamsheetsToUpdate = new ArrayList<>();
+        teamsheets.stream()
+                .forEach(teamsheet -> teamsheet.setId(new TeamsheetId(teamsheet.getFixture().getId(), teamsheet.getPlayer().getId())));
 
         for (Teamsheet teamsheet : teamsheets) {
             if (teamsheetRepository.existsById(teamsheet.getId())) {
